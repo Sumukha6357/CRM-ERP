@@ -1,0 +1,8 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (malloc) failed to allocate 275056 bytes. Error detail: Chunk::new
+# An error report file with more information is saved as:
+# C:\Proj\CRM-ERP\api\hs_err_pid24540.log
+#
+# Compiler replay data is saved as:
+# C:\Proj\CRM-ERP\api\replay_pid24540.log

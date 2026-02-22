@@ -1,13 +1,15 @@
 services:
   db:
     image: postgres:16
-    container_name: ggos-db-prod
+    container_name: ggos-db
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-ggos}
       POSTGRES_USER: ${POSTGRES_USER:-ggos}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ggos}
+    ports:
+      - "5432:5432"
     volumes:
-      - ggos_pgdata_prod:/var/lib/postgresql/data
+      - ggos_pgdata:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
       interval: 10s
@@ -18,13 +20,13 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile
-    container_name: ggos-api-prod
+    container_name: ggos-api
     environment:
       DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-ggos}
       DB_USER: ${POSTGRES_USER:-ggos}
       DB_PASS: ${POSTGRES_PASSWORD:-ggos}
       JWT_SECRET: ${JWT_SECRET}
-      SPRING_PROFILES_ACTIVE: prod
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-local}
     depends_on:
       db:
         condition: service_healthy
@@ -38,14 +40,14 @@ services:
       args:
         NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
         NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME}
-        NEXT_PUBLIC_ENV: prod
-        NEXT_PUBLIC_DEBUG: "false"
-    container_name: ggos-web-prod
+        NEXT_PUBLIC_ENV: ${SPRING_PROFILES_ACTIVE:-local}
+        NEXT_PUBLIC_DEBUG: "true"
+    container_name: ggos-web
     environment:
       NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
       NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME}
-      NEXT_PUBLIC_ENV: prod
-      NEXT_PUBLIC_DEBUG: "false"
+      NEXT_PUBLIC_ENV: ${SPRING_PROFILES_ACTIVE:-local}
+      NEXT_PUBLIC_DEBUG: "true"
     depends_on:
       api:
         condition: service_healthy
@@ -53,4 +55,4 @@ services:
       - "3000:3000"
 
 volumes:
-  ggos_pgdata_prod:
+  ggos_pgdata:

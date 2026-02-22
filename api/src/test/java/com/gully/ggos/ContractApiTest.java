@@ -66,8 +66,8 @@ class ContractApiTest extends IntegrationTestBase {
                 .post("/api/crm/leads")
                 .then()
                 .statusCode(200)
-                .body("id", notNullValue())
-                .body("name", equalTo("Contract Lead"));
+                .body("data.id", notNullValue())
+                .body("data.name", equalTo("Contract Lead"));
 
         given()
                 .header("Authorization", "Bearer " + token)
@@ -75,7 +75,7 @@ class ContractApiTest extends IntegrationTestBase {
                 .get("/api/crm/leads")
                 .then()
                 .statusCode(200)
-                .body("content", notNullValue());
+                .body("data", notNullValue());
 
         given()
                 .header("Authorization", "Bearer " + token)

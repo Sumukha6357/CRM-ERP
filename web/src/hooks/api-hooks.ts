@@ -39,8 +39,6 @@ export function useMe() {
   });
 }
 
-type Lead = z.infer<typeof LeadSchema>;
-type Deal = z.infer<typeof DealSchema>;
 export type Activity = z.infer<typeof ActivitySchema>;
 export type WorkflowInstance = z.infer<typeof WorkflowInstanceSchema>;
 export type NotificationItem = z.infer<typeof NotificationSchema>;

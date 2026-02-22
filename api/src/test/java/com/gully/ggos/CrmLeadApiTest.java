@@ -29,8 +29,8 @@ public class CrmLeadApiTest extends IntegrationTestBase {
                 .post("/api/crm/leads")
                 .then()
                 .statusCode(200)
-                .body("id", notNullValue())
-                .body("name", equalTo("Acme Lead"));
+                .body("data.id", notNullValue())
+                .body("data.name", equalTo("Acme Lead"));
 
         given()
                 .header("Authorization", "Bearer " + token)
@@ -38,7 +38,7 @@ public class CrmLeadApiTest extends IntegrationTestBase {
                 .get("/api/crm/leads")
                 .then()
                 .statusCode(200)
-                .body("content.size()", notNullValue());
+                .body("data.size()", notNullValue());
     }
 
     private String login() {

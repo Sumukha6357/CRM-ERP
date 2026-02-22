@@ -10,8 +10,17 @@ import { validatePage } from "@/lib/schemas/common";
 import { toastMutationError } from "@/lib/errors";
 import { z } from "zod";
 
+type SchemaError = Error & {
+  response: {
+    data: {
+      code: string;
+      details: unknown;
+    };
+  };
+};
+
 function schemaError(details: unknown) {
-  const error: any = new Error("Schema mismatch");
+  const error = new Error("Schema mismatch") as SchemaError;
   error.response = { data: { code: "UPSTREAM_SCHEMA_MISMATCH", details } };
   return error;
 }
@@ -32,9 +41,11 @@ export function useMe() {
 
 type Lead = z.infer<typeof LeadSchema>;
 type Deal = z.infer<typeof DealSchema>;
-type Activity = z.infer<typeof ActivitySchema>;
-type WorkflowInstance = z.infer<typeof WorkflowInstanceSchema>;
-type Notification = z.infer<typeof NotificationSchema>;
+export type Activity = z.infer<typeof ActivitySchema>;
+export type WorkflowInstance = z.infer<typeof WorkflowInstanceSchema>;
+export type NotificationItem = z.infer<typeof NotificationSchema>;
+export type Lead = z.infer<typeof LeadSchema>;
+export type Deal = z.infer<typeof DealSchema>;
 
 export type LeadInput = Partial<Lead> & Pick<Lead, "name">;
 export type DealInput = Partial<Deal> & Pick<Deal, "title">;
@@ -304,9 +315,9 @@ export function useMarkNotificationRead() {
   });
 }
 
-type Role = { id: string; code: string; name: string };
-type Permission = { id: string; code: string; name: string };
-type UserSummary = { id: string; email: string; fullName: string; status: string };
+export type Role = { id: string; code: string; name: string };
+export type Permission = { id: string; code: string; name: string };
+export type UserSummary = { id: string; email: string; fullName: string; status: string };
 
 export function useAdminPermissions() {
   return useQuery({

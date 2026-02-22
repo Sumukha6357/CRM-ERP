@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useDeleteLead, useLeads } from "@/hooks/api-hooks";
+import { useDeleteLead, useLeads, type Lead } from "@/hooks/api-hooks";
 import { PageHeader } from "@/components/page-header";
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
@@ -72,7 +72,7 @@ export default function LeadsPage() {
               key: "actions",
               header: "Actions",
               align: "right",
-              render: (row: any) => (
+              render: (row: Lead) => (
                 <div className="flex items-center justify-end gap-2">
                   <Button variant="outline" size="sm" asChild>
                     <Link href={`/crm/leads/${row.id}`}>View</Link>
@@ -91,7 +91,7 @@ export default function LeadsPage() {
               ),
             },
           ]}
-          data={(leadsQuery.data?.content ?? []).filter((lead: any) =>
+          data={(leadsQuery.data?.content ?? []).filter((lead: Lead) =>
             search ? lead.name?.toLowerCase().includes(search.toLowerCase()) : true
           )}
           loading={leadsQuery.isLoading}

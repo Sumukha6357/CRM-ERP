@@ -9,6 +9,17 @@ type Column<T> = {
   align?: "left" | "right";
 };
 
+function getCellValue<T>(row: T, key: string): React.ReactNode {
+  const value = (row as Record<string, unknown>)[key];
+  if (value === null || value === undefined) {
+    return "";
+  }
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  return "";
+}
+
 export function DataTable<T>({
   columns,
   data,
@@ -67,7 +78,7 @@ export function DataTable<T>({
                     >
                       {columns.map((column) => (
                         <TableCell key={column.key} className={column.align === "right" ? "text-right" : ""}>
-                          {column.render ? column.render(row) : (row as any)[column.key]}
+                          {column.render ? column.render(row) : getCellValue(row, column.key)}
                         </TableCell>
                       ))}
                     </TableRow>

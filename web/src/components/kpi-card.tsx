@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Activity, CircleDollarSign, Handshake, TrendingUp } from "lucide-react";
@@ -45,40 +45,7 @@ export function KpiCard({
 
 function useAnimatedMetric(value: string | number) {
   const parsed = useMemo(() => parseDisplayValue(value), [value]);
-  const [display, setDisplay] = useState(() => formatDisplayValue(parsed, parsed.numeric ?? 0));
-
-  useEffect(() => {
-    if (parsed.numeric === null) {
-      setDisplay(parsed.raw);
-      return;
-    }
-
-    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setDisplay(formatDisplayValue(parsed, parsed.numeric));
-      return;
-    }
-
-    let frame = 0;
-    const duration = 850;
-    const start = performance.now();
-    const target = parsed.numeric;
-
-    const tick = (now: number) => {
-      const elapsed = now - start;
-      const progress = Math.min(1, elapsed / duration);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const current = target * eased;
-      setDisplay(formatDisplayValue(parsed, current));
-      if (progress < 1) {
-        frame = requestAnimationFrame(tick);
-      }
-    };
-
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [parsed]);
-
-  return display;
+  return formatDisplayValue(parsed, parsed.numeric ?? 0);
 }
 
 function parseDisplayValue(value: string | number) {

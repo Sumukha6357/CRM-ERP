@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { PermissionGate } from "@/components/permission-gate";
@@ -21,6 +21,9 @@ import {
   useUpdateRolePermissions,
   useUpdateUserRoles,
   useUserRoles,
+  type Permission,
+  type Role,
+  type UserSummary,
 } from "@/hooks/api-hooks";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { ListToolbar } from "@/components/list-toolbar";
@@ -46,7 +49,7 @@ export default function RbacPage() {
   const rolePermissionsQuery = useRolePermissions(selectedRoleId ?? undefined);
   const updateRolePermissionsMutation = useUpdateRolePermissions(selectedRoleId ?? undefined);
 
-  const [selectedPerms, setSelectedPerms] = useState<string[]>([]);
+  const [draftSelectedPerms, setDraftSelectedPerms] = useState<string[]>([]);
   const [rolePermsDirty, setRolePermsDirty] = useState(false);
 
   const [userPage, setUserPage] = useState(0);
@@ -55,7 +58,7 @@ export default function RbacPage() {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const userRolesQuery = useUserRoles(selectedUserId ?? undefined);
   const updateUserRolesMutation = useUpdateUserRoles(selectedUserId ?? undefined);
-  const [selectedUserRoles, setSelectedUserRoles] = useState<string[]>([]);
+  const [draftSelectedUserRoles, setDraftSelectedUserRoles] = useState<string[]>([]);
   const [userRolesDirty, setUserRolesDirty] = useState(false);
 
   const updateRoleMutation = useUpdateRole(selectedRoleId ?? "");
@@ -78,6 +81,7 @@ export default function RbacPage() {
   const selectRole = (roleId: string) => {
     setSelectedRoleId(roleId);
     setRolePermsDirty(false);
+    setDraftSelectedPerms([]);
   };
 
   const handleSaveRole = () => {
@@ -88,17 +92,8 @@ export default function RbacPage() {
     updateRoleMutation.mutate({ code: roleCode, name: roleName }, { onSuccess: () => setRoleDialogOpen(false) });
   };
 
-  useEffect(() => {
-    if (rolePermissionsQuery.data && !rolePermsDirty) {
-      setSelectedPerms(rolePermissionsQuery.data);
-    }
-  }, [rolePermissionsQuery.data, rolePermsDirty]);
-
-  useEffect(() => {
-    if (userRolesQuery.data && !userRolesDirty) {
-      setSelectedUserRoles(userRolesQuery.data);
-    }
-  }, [userRolesQuery.data, userRolesDirty]);
+  const selectedPerms = rolePermsDirty ? draftSelectedPerms : (rolePermissionsQuery.data ?? []);
+  const selectedUserRoles = userRolesDirty ? draftSelectedUserRoles : (userRolesQuery.data ?? []);
 
   return (
     <PermissionGate permission="SYS_ADMIN">
@@ -130,7 +125,7 @@ export default function RbacPage() {
                         key: "actions",
                         header: "Actions",
                         align: "right",
-                        render: (row: any) => (
+                        render: (row: Role) => (
                           <div className="flex items-center justify-end gap-2">
                             <Button size="sm" variant="outline" onClick={() => selectRole(row.id)}>
                               Select
@@ -167,16 +162,19 @@ export default function RbacPage() {
                         Editing role: {selectedRole.name} ({selectedRole.code})
                       </div>
                       <div className="grid gap-2 md:grid-cols-2">
-                        {(permissionsQuery.data ?? []).map((perm: any) => (
+                        {(permissionsQuery.data ?? []).map((perm: Permission) => (
                           <label key={perm.code} className="flex items-center gap-2 text-sm">
                             <Checkbox
                               checked={selectedPerms.includes(perm.code)}
                               onCheckedChange={(checked) => {
                                 setRolePermsDirty(true);
+                                const current = selectedPerms;
                                 if (checked) {
-                                  setSelectedPerms((prev) => [...prev, perm.code]);
+                                  setDraftSelectedPerms(
+                                    current.includes(perm.code) ? current : [...current, perm.code]
+                                  );
                                 } else {
-                                  setSelectedPerms((prev) => prev.filter((code) => code !== perm.code));
+                                  setDraftSelectedPerms(current.filter((code) => code !== perm.code));
                                 }
                               }}
                             />
@@ -188,7 +186,10 @@ export default function RbacPage() {
                         <Button
                           onClick={() =>
                             updateRolePermissionsMutation.mutate(selectedPerms, {
-                              onSuccess: () => setRolePermsDirty(false),
+                              onSuccess: () => {
+                                setRolePermsDirty(false);
+                                setDraftSelectedPerms([]);
+                              },
                             })
                           }
                           disabled={!selectedRoleId}
@@ -229,11 +230,12 @@ export default function RbacPage() {
                         key: "actions",
                         header: "Actions",
                         align: "right",
-                        render: (row: any) => (
+                        render: (row: UserSummary) => (
                           <div className="flex items-center justify-end">
                             <Button size="sm" variant="outline" onClick={() => {
                               setSelectedUserId(row.id);
                               setUserRolesDirty(false);
+                              setDraftSelectedUserRoles([]);
                             }}>
                               Select
                             </Button>
@@ -259,16 +261,17 @@ export default function RbacPage() {
                   {selectedUserId ? (
                     <>
                       <div className="grid gap-2">
-                        {(rolesQuery.data ?? []).map((role: any) => (
+                        {(rolesQuery.data ?? []).map((role: Role) => (
                           <label key={role.id} className="flex items-center gap-2 text-sm">
                             <Checkbox
                               checked={selectedUserRoles.includes(role.id)}
                               onCheckedChange={(checked) => {
                                 setUserRolesDirty(true);
+                                const current = selectedUserRoles;
                                 if (checked) {
-                                  setSelectedUserRoles((prev) => [...prev, role.id]);
+                                  setDraftSelectedUserRoles(current.includes(role.id) ? current : [...current, role.id]);
                                 } else {
-                                  setSelectedUserRoles((prev) => prev.filter((id) => id !== role.id));
+                                  setDraftSelectedUserRoles(current.filter((id) => id !== role.id));
                                 }
                               }}
                             />
@@ -281,7 +284,10 @@ export default function RbacPage() {
                       <Button
                         onClick={() =>
                           updateUserRolesMutation.mutate(selectedUserRoles, {
-                            onSuccess: () => setUserRolesDirty(false),
+                            onSuccess: () => {
+                              setUserRolesDirty(false);
+                              setDraftSelectedUserRoles([]);
+                            },
                           })
                         }
                       >

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useMarkNotificationRead, useNotifications } from "@/hooks/api-hooks";
+import { useMarkNotificationRead, useNotifications, type NotificationItem } from "@/hooks/api-hooks";
 import { PageHeader } from "@/components/page-header";
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,7 @@ export default function NotificationsPage() {
               key: "actions",
               header: "Actions",
               align: "right",
-              render: (row: any) => (
+              render: (row: NotificationItem) => (
                 <div className="flex items-center justify-end">
                   <Button
                     size="sm"
@@ -48,7 +48,7 @@ export default function NotificationsPage() {
               ),
             },
           ]}
-          data={(notificationsQuery.data?.content ?? []).filter((note: any) =>
+          data={(notificationsQuery.data?.content ?? []).filter((note: NotificationItem) =>
             search ? note.title?.toLowerCase().includes(search.toLowerCase()) : true
           )}
           loading={notificationsQuery.isLoading}

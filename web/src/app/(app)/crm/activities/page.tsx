@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useActivities, useCreateActivity } from "@/hooks/api-hooks";
+import { useActivities, useCreateActivity, type Activity } from "@/hooks/api-hooks";
 import { PageHeader } from "@/components/page-header";
 import { DataTable } from "@/components/data-table";
 import { Card, CardContent } from "@/components/ui/card";
 import { PermissionGate } from "@/components/permission-gate";
-import { ActivityForm, ActivityFormValues } from "@/components/crm/activity-form";
+import { ActivityForm } from "@/components/crm/activity-form";
 import { ListToolbar } from "@/components/list-toolbar";
 
 export default function ActivitiesPage() {
@@ -41,7 +41,7 @@ export default function ActivitiesPage() {
             { key: "subject", header: "Subject" },
             { key: "dueAt", header: "Due" },
           ]}
-          data={(activitiesQuery.data?.content ?? []).filter((activity: any) =>
+          data={(activitiesQuery.data?.content ?? []).filter((activity: Activity) =>
             search ? activity.subject?.toLowerCase().includes(search.toLowerCase()) : true
           )}
           loading={activitiesQuery.isLoading}

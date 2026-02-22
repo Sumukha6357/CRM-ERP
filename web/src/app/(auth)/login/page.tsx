@@ -44,7 +44,7 @@ export default function LoginPage() {
       setUser(user);
       toast.success("Welcome back");
       router.replace("/dashboard");
-    } catch (error) {
+    } catch {
       toast.error("Login failed");
     }
   };

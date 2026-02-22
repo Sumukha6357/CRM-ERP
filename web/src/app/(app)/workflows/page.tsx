@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApproveWorkflow, useRejectWorkflow, useWorkflows } from "@/hooks/api-hooks";
+import { useApproveWorkflow, useRejectWorkflow, useWorkflows, type WorkflowInstance } from "@/hooks/api-hooks";
 import { PageHeader } from "@/components/page-header";
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ export default function WorkflowsPage() {
               key: "actions",
               header: "Actions",
               align: "right",
-              render: (row: any) => (
+              render: (row: WorkflowInstance) => (
                 <div className="flex items-center justify-end gap-2">
                   <Button
                     size="sm"
@@ -57,7 +57,7 @@ export default function WorkflowsPage() {
               ),
             },
           ]}
-          data={(workflowsQuery.data?.content ?? []).filter((instance: any) =>
+          data={(workflowsQuery.data?.content ?? []).filter((instance: WorkflowInstance) =>
             search ? instance.definitionCode?.toLowerCase().includes(search.toLowerCase()) : true
           )}
           loading={workflowsQuery.isLoading}

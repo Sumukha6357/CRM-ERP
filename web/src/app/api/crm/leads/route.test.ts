@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { NextRequest } from "next/server";
 import { GET } from "./route";
 
 vi.mock("next/headers", () => ({
@@ -27,8 +28,8 @@ describe("BFF leads route", () => {
       )
     ));
 
-    const request = new Request("http://localhost/api/crm/leads");
-    const response = await GET(request as any);
+    const request = new NextRequest("http://localhost/api/crm/leads");
+    const response = await GET(request);
     const data = await response.json();
     expect(response.status).toBe(200);
     expect(data.content.length).toBe(1);
@@ -42,8 +43,8 @@ describe("BFF leads route", () => {
       )
     ));
 
-    const request = new Request("http://localhost/api/crm/leads");
-    const response = await GET(request as any);
+    const request = new NextRequest("http://localhost/api/crm/leads");
+    const response = await GET(request);
     const data = await response.json();
     expect(response.status).toBe(502);
     expect(data.code).toBe("UPSTREAM_SCHEMA_MISMATCH");
@@ -57,8 +58,8 @@ describe("BFF leads route", () => {
       })
     ));
 
-    const request = new Request("http://localhost/api/crm/leads");
-    const response = await GET(request as any);
+    const request = new NextRequest("http://localhost/api/crm/leads");
+    const response = await GET(request);
     const data = await response.json();
     expect(response.status).toBe(401);
     expect(data.code).toBe("AUTH_EXPIRED");
@@ -72,8 +73,8 @@ describe("BFF leads route", () => {
       })
     ));
 
-    const request = new Request("http://localhost/api/crm/leads");
-    const response = await GET(request as any);
+    const request = new NextRequest("http://localhost/api/crm/leads");
+    const response = await GET(request);
     const data = await response.json();
     expect(response.status).toBe(500);
     expect(data.code).toBe("UPSTREAM_NON_JSON");

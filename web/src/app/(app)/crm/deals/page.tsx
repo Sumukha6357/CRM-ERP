@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useDeals, useDeleteDeal } from "@/hooks/api-hooks";
+import { useDeals, useDeleteDeal, type Deal } from "@/hooks/api-hooks";
 import { PageHeader } from "@/components/page-header";
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
@@ -72,7 +72,7 @@ export default function DealsPage() {
               key: "actions",
               header: "Actions",
               align: "right",
-              render: (row: any) => (
+              render: (row: Deal) => (
                 <div className="flex items-center justify-end">
                   <div className="flex items-center gap-2">
                     <Button variant="outline" size="sm" asChild>
@@ -93,7 +93,7 @@ export default function DealsPage() {
               ),
             },
           ]}
-          data={(dealsQuery.data?.content ?? []).filter((deal: any) =>
+          data={(dealsQuery.data?.content ?? []).filter((deal: Deal) =>
             search ? deal.title?.toLowerCase().includes(search.toLowerCase()) : true
           )}
           loading={dealsQuery.isLoading}

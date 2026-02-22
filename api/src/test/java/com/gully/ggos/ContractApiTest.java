@@ -15,7 +15,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 class ContractApiTest extends IntegrationTestBase {
     private static final UUID DEFAULT_ORG_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
-    private static final String PASSWORD_HASH = "$2a$10$7EqJtq98hPqEX7fNZaFWoOhi5Q1CDe7v4xYueAA6QbV0I1f3wWg5G";
+    private static final String PASSWORD_HASH = "$2a$10$jYOggSBa5taHtkhB8hZaeOBE6bCX851CKeuzmJ52cYlE452Ljo8da";
 
     @Autowired
     JdbcTemplate jdbcTemplate;
